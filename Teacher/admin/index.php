@@ -55,7 +55,7 @@ exit();
 				
 					<ul class="nav pull-right">
 
-						<li ><a href="http://localhost/Teacher/">
+						<li><a href="http://localhost/Teacher/">	
 						<span style="color:white">Home</span>
 						
 						</a></li>

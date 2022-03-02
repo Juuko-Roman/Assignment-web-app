@@ -6,7 +6,12 @@ if(strlen($_SESSION['login'])==0)
    { 
  header('location:index.php');
  }
- ?>
+
+ $sql="select * from teacher where username='".$_SESSION['login']."'";
+$query=mysqli_query($bd,$sql);
+$row=mysqli_fetch_array($query);
+$teacherID=$row['teacher_id'];
+?>
 
 <!DOCTYPE html>
 <html>
@@ -22,18 +27,6 @@ if(strlen($_SESSION['login'])==0)
     <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link href="assets/css/style.css" rel="stylesheet">
     
-    
-    <script type="text/javascript" language="javascript">
-      function Comment(value1){
-        var ID="n"+value1;
-        var btn= document.getElementById(value1);
-        var TeacherComm=document.getElementById(ID);
-        
-          var feedback=prompt("Write your comment in the space below");
-          if(feedback)
-          TeacherComm.innerHTML=feedback;
-}
-    </script>
 </head>
 <body>
 <section>
@@ -48,16 +41,14 @@ if(strlen($_SESSION['login'])==0)
 
 
 
-
-
 <section id="main-content">
           <section class="wrapper">
-            <h3 style="text-align: center; color:red;"> <b>PUPILS' SCORES</b></h3>
+            <h3 style="text-align: center;"><b><span style="color:red;">PUPILS' SCORES</span></b></h3>
 
             <div class="row mt">
               <div class="col-lg-12">
                   <div class="form-panel">
-                      <h4 class="mb"><i class="fa fa-angle-right"></i>Below is the list of registered pupils</h4>
+                      <h4 class="mb"><i class="fa fa-angle-right"></i>Below is the list of student results from the attempted assignments</h4>
       <div class="span9">
           <div class="content">
 
@@ -70,12 +61,10 @@ if(strlen($_SESSION['login'])==0)
                 <table cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped  display" >
                   <thead>
                     <tr>
-                      <th>#</th>                      
-                      <th>NAME</th>
+                      <th>#&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>                      
+                      <th>FULL NAME</th>
                       <th>ASSIGNMENT NUMBER</th>
                       <th>CHARACTERS SUBMITTED</th>
-                      <th>PERCENTAGE COMPLETED</th>
-                      <th>PERCENTAGE MISSED</th>
                       <th>MARKS SCORED</th>
                       <th>ATTEMPT DURATION</th>
                       <th>TEACHER'S COMMENT</th>
@@ -85,24 +74,29 @@ if(strlen($_SESSION['login'])==0)
                   </thead>
                   <tbody>
 
-<?php $query=mysqli_query($bd, "select * from pupil");
-$query1=mysqli_query($bd, "select * from assignment");
-$query2=mysqli_query($bd, "select * from attempt");
-$query3=mysqli_query($bd, "select * from marks");
+<?php 
+$sql="select * from teacher where username='".$_SESSION['login']."'";
+$query=mysqli_query($bd,$sql);
+$row=mysqli_fetch_array($query);
+$teacherID=$row['teacher_id'];
+
+$query=mysqli_query($bd, "select * from pupil inner join marks on marks.pupil_userCode=pupil.userCode inner join assignment on assignment.assignmentNo=marks.assignmentNo where assignment.teacher_id='$teacherID'");
+// $query1=mysqli_query($bd, "select * from assignment");
+// $query2=mysqli_query($bd, "select * from attempt");
+//$query3=mysqli_query($bd, "select * from marks");
 $cnt1=1;
-for(;$row=mysqli_fetch_array($query),$row1=mysqli_fetch_array($query1),$row2=mysqli_fetch_array($query2),$row3=mysqli_fetch_array($query3);)
+for(;$row=mysqli_fetch_array($query);)/*$row1=mysqli_fetch_array($query1),$row2=mysqli_fetch_array($query2),$row3=mysqli_fetch_array($query3);)*/
 {
 ?>                  
                     <tr>
+                      <input id="n<?php echo $cnt1;?>" type="hidden" name="usercode" value="<?php echo htmlentities($row['userCode']);?>">
                       <td><?php echo htmlentities($cnt1);?></td>
                       <td><?php echo htmlentities($row['lName'])." ".htmlentities($row['fName']);?></td>
-                      <td><?php echo htmlentities($row1['assignmentNo']);?></td>                      
-                      <td><?php echo htmlentities($row1['Characters']);?></td>
-                      <td><?php echo htmlentities($row2['percentageCompleted']);?></td>
-                      <td><?php echo htmlentities($row2['percentageMissed']);?></td>
-                      <td> <?php echo htmlentities($row3['score']);?></td>                      
-                      <td><?php echo htmlentities($row2['duration']);?></td>
-                      <td id="n<?php echo $cnt1;?>"><?php echo htmlentities($row3['comment']);?></td>
+                      <td id="m<?php echo $cnt1;?>"><?php echo htmlentities($row['assignmentNo']);?></td>                      
+                      <td><?php echo htmlentities($row['Characters']);?></td>
+                      <td> <?php echo htmlentities($row['score']);?></td>                      
+                      <td><?php echo htmlentities($row['duration']);?></td>
+                      <td ><?php echo htmlentities($row['comment']);?></td>
                       <td>  
                        <button type="button" id="<?php echo $cnt1;?>" onClick="Comment(<?php echo $cnt1;?>)" class="btn btn-primary" >Click to comment</button>
                       </td>
@@ -110,11 +104,45 @@ for(;$row=mysqli_fetch_array($query),$row1=mysqli_fetch_array($query1),$row2=mys
                     <?php $cnt1=$cnt1+1; } ?>
                     
                 </table>
-              </div>
-            </div>            
 
-            
-            
+    <script type="text/javascript" language="javascript">
+      function Comment(value1){
+        userAcceptance=confirm("Do you really want to change this comment?")
+          if(userAcceptance)
+          {
+            var feedback=prompt("Write your comment in the space below");
+            if(feedback)
+            {
+              var usercodeID="n"+value1;
+              var assgID="m"+value1;
+
+              
+              var usercode=document.getElementById(usercodeID).value;
+              var assgNo=document.getElementById(assgID).innerHTML;              
+
+              $.post('updateComment.php',{postname:usercode,postage:assgNo,postfeedback:feedback},
+              function(data)
+              {
+
+                if (data==1) 
+                {
+
+                  alert("Comment updated successfully");
+                  window.location="scores.php";
+                  
+                }
+                if(data==0)
+                {
+                  alert("sorry something went wrong!");
+                  window.location="scores.php";
+                }         
+                
+              });          
+
+            }
+          }
+}
+    </script>                            
           </div><!--/.content-->
         </div><!--/.span9-->
       </div>

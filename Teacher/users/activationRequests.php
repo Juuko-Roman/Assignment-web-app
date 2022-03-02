@@ -35,12 +35,12 @@ if(strlen($_SESSION['login'])==0)
 
 <section id="main-content">
           <section class="wrapper">
-            <h3 style="text-align: center;"> <b><span style="color:red;">WELCOME TO THE VIEW PUPIL PAGE</span></b></h3>
+            <h3 style="text-align: center;"> <b><span style="color:red;">WELCOME TO THE ACTIVATION REQUESTS </span></b></h3>
 
             <div class="row mt">
               <div class="col-lg-12">
                   <div class="form-panel">
-                      <h4 class="mb"><i class="fa fa-angle-right"></i>Below is the list of registered pupils</h4>
+                      <h4 class="mb"><i class="fa fa-angle-right"></i>Below is the list of Deactivated pupils</h4>
       <div class="span9">
           <div class="content">
 
@@ -57,17 +57,13 @@ if(strlen($_SESSION['login'])==0)
                       <th>USER CODE</th>
                       <th>LAST NAME</th>
                       <th>FIRST NAME</th>
-                      <th>GENDER</th>
-                      <th>PHONE NUMBER</th>
-                      <th>PUPIL STATUS</th>
-                      <th>REGISTRATON DATE</th>
-                      <th colspan="2">ACTIONS</th>
-                    
+                      <th>ACTIVATION REQUEST</th>                    
+                      <th>ACTIONS</th>                    
                     </tr>
                   </thead>
                   <tbody>
 
-<?php $query=mysqli_query($bd, "select * from pupil");
+<?php $query=mysqli_query($bd, "select * from pupil inner join activation_request on pupil.userCode=activation_request.pupil_userCode");
 $cnt1=1;
 while($row=mysqli_fetch_array($query))
 {
@@ -77,24 +73,18 @@ while($row=mysqli_fetch_array($query))
                       <td id="n<?php echo $cnt1;?>"><?php echo htmlentities($row['userCode']);?></td>
                       <td><?php echo htmlentities($row['lName']);?></td>
                       <td><?php echo htmlentities($row['fName']);?></td>
-                      <td><?php echo htmlentities($row['Sex']);?></td>
-                      <td> <?php echo htmlentities($row['phone_number']);?></td>
-                      <td> <?php echo htmlentities($row['Status']);?></td>
-                      <td> <?php echo htmlentities($row['regDate']);?></td>                      
-                      
+                      <td><?php echo htmlentities($row['request']);?></td>                                         
 
                       <?php if($row['Status']=="Active")
                       {?>
                       <td>  
                        <button type="button" id="<?php echo $cnt1;?>" onClick="Deactivate(<?php echo $cnt1;?>)" class="btn btn-danger" >Deactivate</button>
-                       <a href="editPupil.php?n=<?php echo htmlentities($row['userCode']) ?>"><button type="button"  class="btn btn-primary" >EDIT PUPIL DETAILS</button></a>
                       </td>
                       <?php }?>
                       <?php if($row['Status']=="Deactivated")
                       {?>
                       <td>  
-                       <a href="activationRequests.php"><button type="button" id="<?php echo $cnt1;?>" class="btn btn-primary" >ACTIVATE</button></a>
-                       <a href="editPupil.php?n=<?php echo htmlentities($row['userCode']) ?>"><button type="button"  class="btn btn-primary" >EDIT PUPIL DETAILS</button></a>
+                       <button type="button" id="<?php echo $cnt1;?>" onClick="Deactivate(<?php echo $cnt1;?>)" class="btn btn-primary" >ACTIVATE</button>
                       </td>
                       <?php }?>
                       
@@ -107,35 +97,37 @@ while($row=mysqli_fetch_array($query))
           var usercode=document.getElementById(ID).innerHTML;
 
           var btn=document.getElementById(value);
-          if (btn.innerHTML=="Deactivate")
+          
+          if (btn.innerHTML=="ACTIVATE")
           {
-            var feedback=confirm("Do you really want to Deactivate the selected Pupil?");  
+            var feedback=confirm("Do you really want to Activate the selected Pupil?");  
             if(feedback)
             {
 
-              var status="Deactivated";
+              var status="Active";
         
 
-              $.post('DeactivatePupil.php',{postcode:usercode,poststatus:status},
+              $.post('ActivatePupil.php',{postcode:usercode,poststatus:status},
               function(data)
               {
                 if (data==1) 
                 {
                   
 
-                  alert("Pupil Deactivated successfully");
-                  window.location="view-pupil.php";
+                  alert("Pupil Activated successfully");
+                  window.location="activationRequests.php";
                   
                 }
                 if(data==0)
                 {
-                  alert("Error! Pupil not Deactivated")
+                  alert("Error! Pupil not Activated")
                 }         
                 
               });
             }
+          }
+        
 
-          }      
 }
 </script>
               </div>

@@ -10,29 +10,25 @@ else{
 date_default_timezone_set('Africa/Kampala');
 $currentTime = date( 'd-m-Y h:i:s A', time () );
 
-$sql="select * from teacher where username='".$_SESSION['login']."'";
-$query=mysqli_query($bd,$sql);
-$row=mysqli_fetch_array($query);
-$teacherID=$row['teacher_id'];
 
 if(isset($_POST['submit']))
 {
-$noChars=$_POST['noChars'];
-$Chars=$_POST['chars'];
-$attemptDate=date('Y-m-d',strtotime($_POST['attemptDate']));
-$startTime=$_POST['startTime'];
-$endTime=$_POST['endTime'];
+  $noChars=$_POST['noChars'];
+  $Chars=$_POST['chars'];
+  $startTime=$_POST['startTime'];
+  $endTime=$_POST['endTime'];
+  $attemptDate=date('Y-m-d',strtotime($_POST['attemptDate']));
+
+  $date=date('Y-m-d');
+if($attemptDate>$date){$status="Pending";}
+else if($attemptDate<$date){$status="Expired";}
+else $status="Open";
 
 $date1=strtotime($endTime);
 $date2=strtotime($startTime);
 $duration=($date1-$date2)/60;
 
-$date=date('Y-m-d');
-if($attemptDate>$date){$status="Pending";}
-else if($attemptDate<$date){$status="Expired";}
-else $status="Open";
-$sqlquerry="INSERT INTO assignment(teacher_id,noOfChars,Characters,attemptDate,start_time,end_time,duration,assignment_status) 
-VALUES ('$teacherID','$noChars','$Chars','$attemptDate','$startTime','$endTime','$duration','$status')";
+$sqlquerry="UPDATE assignment set noOfChars='$noChars', Characters='$Chars', attemptDate='$attemptDate', start_time='$startTime', end_time='$endTime', assignment_status='$status', duration='$duration' where assignmentNo='".$_GET['n']."'";
 if(mysqli_query($bd,$sqlquerry))
 {
   $successmsg="Assignment submitted Successfully!";
@@ -71,13 +67,13 @@ else
       <?php include("includes/side-bar.php");?>
       <section id="main-content">
           <section class="wrapper">
-            <h3 style="text-align: center; color:red;"> <b>WELCOME TO NEW ASSIGNMENT PAGE</b></h3>
+            <h3 style="text-align: center; color:red;"> <b>WELCOME TO EDIT ASSIGNMENT PAGE</b></h3>
             
             <!-- BASIC FORM ELELEMNTS -->
             <div class="row mt">
               <div class="col-lg-12">
                   <div class="form-panel">
-                    <h3>current time is <?php echo $currentTime ?></h3>
+                    
 
                       <?php if($successmsg)
                       {?>
@@ -97,15 +93,20 @@ else
   <h4 class="mb">Enter assignment details as indicated below</h4>
     
                       <form class="form-horizontal style-form" method="post" name="profile" >
+                        <?php 
+                        $query=mysqli_query($bd, "select * from assignment where assignmentNo='".$_GET['n']."'");
+
+                        $row=mysqli_fetch_array($query)
+                        ?>
 
 <div class="form-group">
 <label class="col-sm-2 col-sm-2 control-label">Number of characters:</label>
 <div class="col-sm-4">
-<input type="number" name="noChars" required="required"  class="form-control" min="1" max="8" >
+<input type="number" name="noChars" required="required" class="form-control" min="1" max="8" placeholder="<?php echo htmlentities($row['noOfChars']);?>" >
  </div>
 <label class="col-sm-2 col-sm-2 control-label">characters:  </label>
  <div class="col-sm-4">
-<input type="text" name="chars" required="required"  class="form-control" >
+<input type="text" name="chars" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['Characters']);?>" >
 </div>
  </div>
 
@@ -113,23 +114,23 @@ else
 <div class="form-group">
 <label class="col-sm-2 col-sm-2 control-label">Date of Attempt:</label>
  <div class="col-sm-4">
-<input type="date" name="attemptDate" required="required"  class="form-control">
+<input type="date" name="attemptDate" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['attemptDate']);?>">
 </div>
 <label class="col-sm-2 col-sm-2 control-label">Start time: </label>
 <div class="col-sm-4">
-<input type="time"   name="startTime" required="required"  class="form-control">
+<input type="time"   name="startTime" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['start_time']);?>">
 </div>
 </div>
 
 <div class="form-group">
 <label class="col-sm-2 col-sm-2 control-label">End time: </label>
 <div class="col-sm-4">
-<input type="time" name="endTime" required="required"  class="form-control">
+<input type="time" name="endTime" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['end_time']);?>">
 </div>
 </div>
                        <div class="form-group" style="margin-left:20%">
                            <div class="col-sm-10" style="padding-left:25% ">
-<button type="submit" name="submit" class="btn btn-primary">Submit Assignment</button>
+<button type="submit" name="submit" class="btn btn-primary">Submit Edited Assignment</button>
 </div>
 </div>
 

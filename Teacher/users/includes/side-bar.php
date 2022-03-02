@@ -5,7 +5,7 @@
               <!-- sidebar menu start-->
               <ul class="sidebar-menu" id="nav-accordion">
               
-                  <p class="centered"><a href="profile.php"><img src="assets/img/ui-sam.jpg" class="img-circle" width="60"></a></p>
+                  <p class="centered"><a href="profile.php"><img src="assets/img/ui-sam.png" class="img-circle" width="60"></a></p>
                    <?php $query=mysqli_query($bd, "select firstName,lastName from teacher where username='".$_SESSION['login']."'");
  while($row=mysqli_fetch_array($query)) 
  {
@@ -16,7 +16,7 @@
                   <li class="mt">
           
                           <i class=""></i>
-                          <span style="color: white; margin-left: 50px; font-size: 18px;" ><b>MENU</b></span>
+                          <b><span style="color: white; margin-left: 50px; font-size: 18px;" >MENU</span></b>
                       
                   </li>
 
@@ -25,7 +25,7 @@
 
                   <li class="sub-menu">
                       <a href="Register-pupil.php" >
-                          <i class="fa fa-book"></i>
+                          <i class="fa fa-pencil"></i>
                           <span>Register pupil</span>
                       </a>
                     
@@ -58,6 +58,16 @@
                   <style>.com{text-align: center;} </style>
         <hr>
 
+                  <li class="sub-menu">
+                      <a href="activationRequests.php" >
+                          <i class="fa fa-book"></i>
+                          <span>Activation Requests</span>
+                      </a>
+                    
+                  </li>
+                  <style>.com{text-align: center;} </style>
+        <hr>        
+
 
 
                   <li class="sub-menu">
@@ -67,6 +77,9 @@
                       </a>
                       <ul class="sub">
                           <li><a  href="scores.php">Pupils Marks</a></li>                        
+                      </ul>
+                      <ul class="sub">
+                          <li><a  href="statistics.php">Statistics</a></li>                        
                       </ul>
                   </li>
                   <style>.com{text-align: center;} </style>

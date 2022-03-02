@@ -10,36 +10,22 @@ else{
 date_default_timezone_set('Africa/Kampala');
 $currentTime = date( 'd-m-Y h:i:s A', time () );
 
-$sql="select * from teacher where username='".$_SESSION['login']."'";
-$query=mysqli_query($bd,$sql);
-$row=mysqli_fetch_array($query);
-$teacherID=$row['teacher_id'];
 
 if(isset($_POST['submit']))
 {
-$noChars=$_POST['noChars'];
-$Chars=$_POST['chars'];
-$attemptDate=date('Y-m-d',strtotime($_POST['attemptDate']));
-$startTime=$_POST['startTime'];
-$endTime=$_POST['endTime'];
+  $firstname=$_POST['fName'];
+  $lastname=$_POST['lName'];
+  if(!empty($_POST['sex'])) {$sex=$_POST['sex'];}
+  $phone=$_POST['phoneNo'];
 
-$date1=strtotime($endTime);
-$date2=strtotime($startTime);
-$duration=($date1-$date2)/60;
-
-$date=date('Y-m-d');
-if($attemptDate>$date){$status="Pending";}
-else if($attemptDate<$date){$status="Expired";}
-else $status="Open";
-$sqlquerry="INSERT INTO assignment(teacher_id,noOfChars,Characters,attemptDate,start_time,end_time,duration,assignment_status) 
-VALUES ('$teacherID','$noChars','$Chars','$attemptDate','$startTime','$endTime','$duration','$status')";
+$sqlquerry="UPDATE pupil set fName='$firstname', lName='$lastname', Sex='$sex', phone_number='$phone' where userCode='".$_GET['n']."'";
 if(mysqli_query($bd,$sqlquerry))
 {
-  $successmsg="Assignment submitted Successfully!";
+  $successmsg="Changes Successfully made";
 }
 else
 {
-  $errormsg="Assignment not submitted!";
+  $errormsg="An error occured, changes not saved!";
 }
 }
 ?>
@@ -71,13 +57,13 @@ else
       <?php include("includes/side-bar.php");?>
       <section id="main-content">
           <section class="wrapper">
-            <h3 style="text-align: center; color:red;"> <b>WELCOME TO NEW ASSIGNMENT PAGE</b></h3>
+            <h3 style="text-align: center; color:red;"> <b>WELCOME TO EDIT PUPIL DETAILS PAGE</b></h3>
             
             <!-- BASIC FORM ELELEMNTS -->
             <div class="row mt">
               <div class="col-lg-12">
                   <div class="form-panel">
-                    <h3>current time is <?php echo $currentTime ?></h3>
+                    
 
                       <?php if($successmsg)
                       {?>
@@ -94,42 +80,62 @@ else
                       <?php }?>
                      
 
-  <h4 class="mb">Enter assignment details as indicated below</h4>
+  <h4 class="mb">Change pupil details as indicated below</h4>
     
                       <form class="form-horizontal style-form" method="post" name="profile" >
+                        <?php 
+                        $query=mysqli_query($bd, "select * from pupil where userCode='".$_GET['n']."'");
+
+                        $row=mysqli_fetch_array($query)
+                        ?>
 
 <div class="form-group">
-<label class="col-sm-2 col-sm-2 control-label">Number of characters:</label>
+<label class="col-sm-2 col-sm-2 control-label">FIRST NAME:</label>
 <div class="col-sm-4">
-<input type="number" name="noChars" required="required"  class="form-control" min="1" max="8" >
+<input type="text" name="fName" required="required" class="form-control"  placeholder="<?php echo htmlentities($row['fName']);?>" >
  </div>
-<label class="col-sm-2 col-sm-2 control-label">characters:  </label>
+<label class="col-sm-2 col-sm-2 control-label">LAST NAME:  </label>
  <div class="col-sm-4">
-<input type="text" name="chars" required="required"  class="form-control" >
+<input type="text" name="lName" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['lName']);?>" >
 </div>
  </div>
 
+<div class="form-group">
+<label class="col-sm-2 col-sm-2 control-label">GENDER</label>
+<div class="col-sm-2">
+<input type="radio" name="sex" value="Male" required="required" style="height: 17px; width: 17px;" <?php if($row['Sex']=="male"){?> checked<?php }?> >
+<label class="control-label">Male</label>
+</div>
+<div class="col-sm-2">
+<input type="radio" name="sex" value="Female" required="required"  style="height: 17px; width: 17px;"<?php if($row['Sex']=="female"){?> echo checked<?php }?>>
+<label class="control-label">Female</label>
+</div>
+</div>
 
 <div class="form-group">
-<label class="col-sm-2 col-sm-2 control-label">Date of Attempt:</label>
+<label class="col-sm-2 col-sm-2 control-label">PHONE NUMBER:</label>
  <div class="col-sm-4">
-<input type="date" name="attemptDate" required="required"  class="form-control">
+<input type="tel" name="phoneNo" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['phone_number']);?>">
 </div>
-<label class="col-sm-2 col-sm-2 control-label">Start time: </label>
+<label class="col-sm-2 col-sm-2 control-label">REGISTRATION DATE: </label>
 <div class="col-sm-4">
-<input type="time"   name="startTime" required="required"  class="form-control">
+<input type="text"   name="gender" required="required"  class="form-control" placeholder="<?php echo htmlentities($row['regDate']);?>" readonly>
 </div>
 </div>
 
 <div class="form-group">
-<label class="col-sm-2 col-sm-2 control-label">End time: </label>
+<label class="col-sm-2 col-sm-2 control-label">USER CODE: </label>
 <div class="col-sm-4">
-<input type="time" name="endTime" required="required"  class="form-control">
+<input type="text" name="usercode" class="form-control" placeholder="<?php echo htmlentities($row['userCode']);?>"readonly>
+</div>
+<label class="col-sm-2 col-sm-2 control-label">STATUS: </label>
+<div class="col-sm-4">
+<input type="text" name="status" class="form-control" placeholder="<?php echo htmlentities($row['Status']);?>"readonly>
 </div>
 </div>
                        <div class="form-group" style="margin-left:20%">
                            <div class="col-sm-10" style="padding-left:25% ">
-<button type="submit" name="submit" class="btn btn-primary">Submit Assignment</button>
+<button type="submit" name="submit" class="btn btn-primary">Submit Changes</button>
 </div>
 </div>
 

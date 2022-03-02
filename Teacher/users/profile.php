@@ -101,7 +101,7 @@ $errormsg="Profile not updated !!";
 
 
 <div class="form-group">
-<label class="col-sm-2 col-sm-2 control-label">Use Name:</label>
+<label class="col-sm-2 col-sm-2 control-label">User Name:</label>
  <div class="col-sm-4">
 <input type="text" name="username" required="required" value="<?php echo htmlentities($row['username']);?>" class="form-control">
 </div>

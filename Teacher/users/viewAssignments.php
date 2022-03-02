@@ -6,32 +6,26 @@ if(strlen($_SESSION['login'])==0)
    { 
  header('location:index.php');
  }
+ 
  ?>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
-  <title>KDLsys | View Pupils</title>
+  <title>KDLsys | View Assignments</title>
+  
+  <link type="text/css" href="images/icons/css/font-awesome.css" rel="stylesheet">
     <link href="assets/css/theme.css" rel="stylesheet">
     <!-- Bootstrap core CSS -->
     <link href="assets/css/bootstrap.css" rel="stylesheet">
     <!--external css-->
     <link href="assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link href="assets/css/style.css" rel="stylesheet">
+
+    <script src="scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
+  <script src="scripts/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
    
-   <script type="text/javascript" language="javascript">
-      function assigEdit(value){
-          var feedback=confirm("Do you really want to edit the selected assignment?");  
-          var assigNo=document.getElementById(value).innerHTML; 
-          
-
-
-        if(feedback){
-          window.location="index.php";
-        }
-
-}
-</script>
+   
 </head>
 <body>
 <section>
@@ -48,7 +42,7 @@ if(strlen($_SESSION['login'])==0)
 
 <section id="main-content">
           <section class="wrapper">
-            <h3 style="text-align: center; color:red;"> <b>WELCOME TO THE VIEW ASSIGNMENTS PAGE</b></h3>
+            <h3 style="text-align: center; color:red;"> <b><span style="color:red">WELCOME TO THE VIEW ASSIGNMENTS PAGE</span></b></h3>
 
             <div class="row mt">
               <div class="col-lg-12">
@@ -61,28 +55,48 @@ if(strlen($_SESSION['login'])==0)
 
               <div class="module-body table">
                   <br />
+<?php
+$sql="select * from teacher where username='".$_SESSION['login']."'";
+$query=mysqli_query($bd,$sql);
+$row=mysqli_fetch_array($query);
+$teacherID=$row['teacher_id'];
 
+ $query=mysqli_query($bd, "select * from assignment where teacher_id='$teacherID'");
+while($row=mysqli_fetch_array($query))
+{
+  $assignmentNo=$row['assignmentNo'];
+  $attemptDate=$row['attemptDate'];
+  $date=date('Y-m-d');
+if($attemptDate>$date){$status="Pending";}
+else if($attemptDate<$date){$status="Expired";}
+else $status="Open";
+
+$sqlquerry="UPDATE assignment set assignment_status='$status' where teacher_id='$teacherID'AND assignmentNo='$assignmentNo' "; 
+$query2=mysqli_query($bd,$sqlquerry);
+  
+}
+?>
               
                 <table cellpadding="0" cellspacing="0" border="0" class="datatable-1 table table-bordered table-striped  display" >
                   <thead>
                     <tr>
-                      <th>#</th>
-                      <th>Assignment No.</th>
-                      <th>Date Uploaded</th>
-                      <th>Number of Characters</th>
-                      <th>Characters Submitted</th>
+                      <th># &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                      <th>Assignment<br> Number</th>
+                      <th>Date<br> Uploaded</th>
+                      <th>Number of <br>Characters</th>
+                      <th>Characters<br> Submitted</th>
                       <th>Attempt Date</th>
-                      <th>Start Time</th>
-                      <th>End Time</th>
-                      <th>Duration</th>
+                      <th>Start<br> Time</th>
+                      <th>End<br> Time</th>
+                      <th>Duration<br>(Minutes)</th>
                       <th>Status</th>
-                      <th>ACTION</th>
+                      <th>ACTIONS</th>
                     
                     </tr>
                   </thead>
                   <tbody>
 
-<?php $query=mysqli_query($bd, "select * from assignment");
+<?php $query=mysqli_query($bd, "select * from assignment where teacher_id='$teacherID'");
 $cnt1=1;
 while($row=mysqli_fetch_array($query))
 {
@@ -98,13 +112,57 @@ while($row=mysqli_fetch_array($query))
                       <td><?php echo htmlentities($row['end_time']);?></td>
                       <td> <?php echo htmlentities($row['duration']);?></td>
                       <td> <?php echo htmlentities($row['assignment_status']);?></td>
+                      <form action="editAssignment.php?n=<?php echo htmlentities($row['assignmentNo']);?>" method="POST">
                       <td>  
-                       <button type="button"  onClick="assigEdit(<?php echo $cnt1;?>)" class="btn btn-primary" >EDIT</button>
+                       <input type="submit"  onClick="return assigEdit(<?php echo $cnt1;?>)" class="btn btn-primary" value="EDIT">
+                       <button type="button" onClick="Delete(<?php echo $cnt1;?>)" class="btn btn-danger" >DELETE</button>
                       </td>
+                      </form>
                       
                     <?php $cnt1=$cnt1+1; } ?>
                     
                 </table>
+                <script type="text/javascript" language="javascript">
+                  function Delete(value){
+          var feedback=confirm("Do you really want to Delete the selected assignment?");  
+
+
+        if(feedback){
+          var AssgNo=document.getElementById(value).innerHTML;
+        
+
+      $.post('deleteAssignment.php',{postAssg:AssgNo},
+      function(data)
+      {
+        if (data==1) 
+        {
+          alert("Assignment deleted successfully");
+          window.location="viewAssignments.php";          
+        }
+        if(data==0)
+        {
+          alert("Error! Assignment not Deleted")
+        }                 
+      });
+        }
+        
+
+}
+
+      function assigEdit(value){
+          var feedback=confirm("Do you really want to edit the selected assignment?");  
+
+
+        if(feedback){
+          return true;
+        }
+        else
+        {
+          return false;
+        }
+
+}
+</script>
               </div>
             </div>            
 
@@ -129,37 +187,7 @@ while($row=mysqli_fetch_array($query))
 
 
 </section>
-    <!-- js placed at the end of the document so the pages load faster -->
-    <script src="assets/js/jquery.js"></script>
-    <script src="assets/js/bootstrap.min.js"></script>
-    <script class="include" type="text/javascript" src="assets/js/jquery.dcjqaccordion.2.7.js"></script>
-    <script src="assets/js/jquery.scrollTo.min.js"></script>
-    <script src="assets/js/jquery.nicescroll.js" type="text/javascript"></script>
 
-
-    <!--common script for all pages-->
-    <script src="assets/js/common-scripts.js"></script>
-
-    <!--script for this page-->
-    <script src="assets/js/jquery-ui-1.9.2.custom.min.js"></script>
-
-  <!--custom switch-->
-  <script src="assets/js/bootstrap-switch.js"></script>
-  
-  <!--custom tagsinput-->
-  <script src="assets/js/jquery.tagsinput.js"></script>
-  
-  <!--custom checkbox & radio-->
-  
-  <script type="text/javascript" src="assets/js/bootstrap-datepicker/js/bootstrap-datepicker.js"></script>
-  <script type="text/javascript" src="assets/js/bootstrap-daterangepicker/date.js"></script>
-  <script type="text/javascript" src="assets/js/bootstrap-daterangepicker/daterangepicker.js"></script>
-  
-  <script type="text/javascript" src="assets/js/bootstrap-inputmask/bootstrap-inputmask.min.js"></script>
-  
-  
-  <script src="assets/js/form-component.js"></script>    
-    
     
   <script>
       //custom select box

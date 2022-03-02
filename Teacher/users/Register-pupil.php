@@ -18,8 +18,8 @@ $lastname=$_POST['lastname'];
 $phoneNo=$_POST['phoneNo'];
 $usercode=$_POST['usercode'];
 if(!empty($_POST['sex'])) {$sex=$_POST['sex'];}
-$sqlquerry="INSERT INTO pupil(userCode,lName,fName,Sex,phone_number,regDate) 
-VALUES ('$usercode','$firstname','$lastname','$sex','$phoneNo','currentTime')";
+$sqlquerry="INSERT INTO pupil(userCode,lName,fName,Sex,phone_number) 
+VALUES ('$usercode','$firstname','$lastname','$sex','$phoneNo')";
 if(mysqli_query($bd,$sqlquerry))
   { 
     $successmsg="Student registered Successfully";
@@ -30,9 +30,6 @@ if(mysqli_query($bd,$sqlquerry))
   }
 }
  ?>
-
-
-
 
 
 <!DOCTYPE html>
@@ -49,9 +46,6 @@ if(mysqli_query($bd,$sqlquerry))
 </head>
 <body>
 <section>
-  
-  
-
 
 <section id="container" >
   
@@ -87,39 +81,39 @@ if(mysqli_query($bd,$sqlquerry))
                           <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">First Name</label>
                               <div class="col-sm-10">
-                                  <input type="text" name="firstname" placeholder="Student's first name" required="required" class="form-control">
+                                  <input type="text" name="firstname" value="<?php echo $_POST['firstname'];?>" placeholder="Student's first name" required="required" class="form-control">
                               </div>
                           </div>
 
                           <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Last Name</label>
                               <div class="col-sm-10">
-                                  <input type="text" name="lastname" required="required"placeholder="Student's last name" class="form-control">
+                                  <input type="text" name="lastname" required="required" value="<?php echo $_POST['lastname'];?>" placeholder="Student's last name" class="form-control">
                               </div>
                           </div>
 
                           <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Sex</label>
                               <div class="col-sm-2">
-                                  <input type="radio" name="sex" value="Male" required="required" style="height: 17px; width: 17px;"  >
+                                  <input type="radio" name="sex" value="Male" required="required" style="height: 17px; width: 17px;" <?php if($_POST['Sex']=="male"){?> checked<?php }?> >
                                   <label class="control-label">Male</label>
                               </div>
                               <div class="col-sm-2">
-                                  <input type="radio" name="sex" value="Female" required="required"  style="height: 17px; width: 17px;">
+                                  <input type="radio" name="sex" value="Female" required="required"  style="height: 17px; width: 17px;" <?php if($_POST['Sex']=="Female"){?> checked<?php }?>>
                                   <label class="control-label">Female</label>
                               </div>
                           </div>
                           <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">Phone Number</label>
                               <div class="col-sm-10">
-                                  <input type="tel" name="phoneNo" required="required" placeholder="Phone number eg 07xxxxxxxx " class="form-control">
+                                  <input type="tel" name="phoneNo" required="required" value="<?php echo $_POST['phoneNo'];?>" placeholder="Phone number eg 07xxxxxxxx " class="form-control">
                               </div>
                           </div>
 
                           <div class="form-group">
                               <label class="col-sm-2 col-sm-2 control-label">User Code</label>
                               <div class="col-sm-10">
-                                  <input type="text" name="usercode" required="required" placeholder="eg A100" class="form-control">
+                                  <input type="text" name="usercode" required="required" value="<?php echo $_POST['usercode'];?>" placeholder="eg A100" class="form-control">
                               </div>
                           </div>
 

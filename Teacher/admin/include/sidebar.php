@@ -8,6 +8,12 @@
 									<i class=" pull-right"></i>
 									MENU
 								</a>
+							<li>
+								<a href="manage-pupils.php">
+									<i class="menu-icon icon-group"></i>
+									Manage Pupils
+								</a>
+							</li>
 							
 							<li>
 								<a href="manage-teachers.php">

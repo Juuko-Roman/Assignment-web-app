@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS `pupil` (
 
 INSERT INTO `pupil` (`userCode`, `lName`, `fName`,`Sex`,`phone_number`) VALUES
 ('A100', 'Juuko', 'Roman', 'male','0754026504'),
-('A101', 'Nagawa', 'Hiratu', 'female','0754026505'),
+('A101', 'Nagawa', 'Hairatu', 'female','0754026505'),
 ('A102', 'Nakibuule', 'Elizabeth', 'female','0754026506'),
 ('A103', 'Ndaula', 'Trevor', 'male','0754026507'),
 ('A104', 'Kisakye', 'Esther', 'female','0754026508'),
@@ -169,14 +169,14 @@ CREATE TABLE IF NOT EXISTS `assignment` (
 
 INSERT INTO `assignment` VALUES
 (1, '1', '5', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
-(2, '1', '4', 'F,G,H,I','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
-(3, '1', '6', 'B,C,D,E,F,G','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
+(2, '1', '4', 'F,G,H,I','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Pending'),
+(3, '1', '6', 'B,C,D,E,F,G','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Open'),
 (4, '1', '4', 'G,H,I,J','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
-(5, '1', '7', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
-(6, '1', '5', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
+(5, '1', '7', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Pending'),
+(6, '1', '5', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Open'),
 (7, '1', '8', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
-(8, '1', '8', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
-(9, '1', '6', 'A,B,C,D,E,Z','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired'),
+(8, '1', '8', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Pending'),
+(9, '1', '6', 'A,B,C,D,E,Z','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Open'),
 (10, '1', '3', 'A,B,C,D,E','2022-02-03','07-01-2022 01:56:47 PM','10:00:00','10:30:00','30','Expired');
 
 --
@@ -192,49 +192,10 @@ INSERT INTO `assignment` VALUES
 DROP TABLE IF EXISTS `activation_request`;
 CREATE TABLE IF NOT EXISTS `activation_request` (
   `request_id` int(15) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `pupil_userCode` varchar(20) NOT NULL ,
+  `pupil_userCode` varchar(20) UNIQUE NOT NULL ,
   `request` varchar(30),
   constraint `fk2` FOREIGN KEY(`pupil_userCode`) REFERENCES pupil(`userCode`) 
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
---
--- Dumping data for table `assignment`
---
-
-INSERT INTO `activation_request` VALUES
-(001, 'A100', 'plaese activate me'),
-(002, 'A101', 'need to be activated');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `attempt`
---
-
-DROP TABLE IF EXISTS `attempt`;
-CREATE TABLE IF NOT EXISTS `attempt` (
-  `attempt_id` int NOT NULL AUTO_INCREMENT,
-  `pupil_userCode` varchar(20) NOT NULL,
-  `assignmentNo` int NOT NULL,
-  `teacher_id` int NOT NULL,
-  `duration` int(5) NOT NULL,
-  `percentageCompleted` int(3),
-  `percentageMissed` int(3),
-  PRIMARY KEY (`attempt_id`),
-  constraint `fkey2` FOREIGN KEY(`pupil_userCode`) REFERENCES pupil(`userCode`) ,
-  constraint `fkey` FOREIGN KEY(`assignmentNo`) REFERENCES assignment(`assignmentNo`) ,
-  constraint `fkey6` FOREIGN KEY(`teacher_id`)REFERENCES teacher(`teacher_id`) 
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
--- --------------------------------------------------------
---
--- Dumping data for table `attempt`
---
-
-INSERT INTO `attempt` VALUES
-(1, 'A100', '1', '1','20','70','30'),
-(2, 'A101', '1', '1','14','100','0');
 
 -- --------------------------------------------------------
 
@@ -248,6 +209,7 @@ CREATE TABLE IF NOT EXISTS `marks` (
   `pupil_userCode` varchar(20) NOT NULL,
   `assignmentNo` int NOT NULL AUTO_INCREMENT,
   `score` varchar(10) NOT NULL,
+   `duration` int(5) NOT NULL,
   `comment` varchar(25) NOT NULL,
   PRIMARY KEY (`assignmentNo`,`pupil_userCode`,`teacher_id`),
   constraint `fkey3` FOREIGN KEY(`pupil_userCode`) REFERENCES pupil(`userCode`) ,
@@ -260,17 +222,8 @@ CREATE TABLE IF NOT EXISTS `marks` (
 --
 
 INSERT INTO `marks` VALUES
-(1, 'A100', '1', '100.0','Excellent'),
-(1, 'A101', '1', '87.5','Very Good'),
-(1, 'A102', '1', '57.8','More Effort Needed'),
-(1, 'A103', '2', '80.5','Good'),
-(1, 'A104', '2', '70.3','Fairy Good'),
-(1, 'A105', '3', '100.0','Excellent'),
-(1, 'A106', '3', '50.0','More Effort Needed'),
-(1, 'A107', '4', '97.3','Exccellent'),
-(1, 'A108', '5', '100.0','Excellent'),
-(1, 'A109', '6', '57.3','More Effort Needed');
-
+(1, 'A100', '1', '100.0','30','Excellent'),
+(1, 'A100', '2', '100.0','30','Excellent');
 
 -- -------------------------------------------------------- 
 

@@ -4,7 +4,7 @@
                   <div class="fa fa-bars tooltips" data-placement="bottom" data-original-title="Toggle MENU"></div>
               </div>
             <!--logo start-->
-            <a href="#" class="logo"><b>KINDERCARE DIGITAL LEARNING SYSTEM</b></a>
+            <a href="#" class="logo"><b><span style="color:white;">KINDERCARE DIGITAL LEARNING SYSTEM</span></b></a>
                 
             <div class="top-menu">
               <ul class="nav pull-right top-menu">

@@ -11,23 +11,19 @@ $currentTime = date( 'd-m-Y h:i:s A', time () );
 
 if(isset($_POST['submit']))
 {
-$firstname=$_POST['fName'];
-$lastname=$_POST['lName'];
-$phoneNo=$_POST['phoneNo'];
-$userName=$_POST['userName'];
-$password=$_POST['password'];
-$status=1;
+  $firstname=$_POST['fName'];
+  $lastname=$_POST['lName'];
+  $phone=$_POST['phoneNo'];
 
-$sqlquerry="INSERT INTO teacher ( firstName, lastName, username, password, phoneNo, status )
-VALUES ('$firstname','$lastname','$userName', '$password','$phoneNo', '$status')";
+$sqlquerry="UPDATE teacher set firstName='$firstname', lastName='$lastname', phoneNo='$phone' where teacher_id='".$_GET['n']."'";
 if(mysqli_query($bd,$sqlquerry))
-  { 
-    $_SESSION['msg']="Teacher registered Successfully";
-  }
-  else
-  {
-    $_SESSION['msg']="Something went wrong. Teacher not registered!!!";
-  }
+{
+  $_SESSION['msg']="Changes Successfully made";
+}
+else
+{
+  $_SESSION['msg']="An error occured, changes not saved!";
+}
 }
 ?>
 
@@ -69,7 +65,7 @@ return true;
 
             <div class="module">
               <div class="module-head">
-                <h3 style="text-align: center;">Admin - Register Teacher (Enter teacher's details as shown below)</h3>
+                <h3 style="text-align: center;">Admin - Enter Teacher's details to be changed below</h3>
               </div>
               <div class="module-body">
 
@@ -83,53 +79,45 @@ return true;
                   <br />
 
       <form class="form-horizontal row-fluid" name="pwdVerify" method="post" onSubmit="return valid();">
-                  
+          <?php 
+          $query=mysqli_query($bd, "select * from teacher where teacher_id='".$_GET['n']."'");
+
+          $row=mysqli_fetch_array($query)
+          ?>                
 <div class="control-group">
 <label class="control-label" for="basicinput">First Name</label>
 <div class="controls">
-<input type="text" placeholder="Enter teacher's First Name"  name="fName" class="span8 tip" required>
+<input type="text" placeholder="<?php echo htmlentities($row['firstName']);?>"  name="fName" class="span8 tip" required>
 </div>
 </div>
 
 <div class="control-group">
 <label class="control-label" for="basicinput">Last Name</label>
 <div class="controls">
-<input type="text" placeholder="Enter teacher's Last Name"  name="lName" class="span8 tip" required>
+<input type="text" placeholder="<?php echo htmlentities($row['lastName']);?>"  name="lName" class="span8 tip" required>
 </div>
 </div>
 
 <div class="control-group">
 <label class="control-label" for="basicinput">Phone No:</label>
 <div class="controls">
-<input type="tel" placeholder="Enter teacher's phone number"  name="phoneNo" class="span8 tip" required>
+<input type="tel" placeholder="<?php echo htmlentities($row['phoneNo']);?>"  name="phoneNo" class="span8 tip" required>
 </div>
 </div>
 
 <div class="control-group">
 <label class="control-label" for="basicinput">User Name</label>
 <div class="controls">
-<input type="text" placeholder="Enter teacher's user name"  name="userName" class="span8 tip" required>
-</div>
-</div>
-
-<div class="control-group">
-<label class="control-label" for="basicinput">Password</label>
-<div class="controls">
-<input type="password" placeholder="Enter teacher's default Password"  name="password" class="span8 tip" required>
-</div>
-</div>
-
-<div class="control-group">
-<label class="control-label" for="basicinput">Confirm Password</label>
-<div class="controls">
-<input type="password" placeholder="Re-enter teacher's password"  name="confirmpassword" class="span8 tip" required>
+<input type="text" placeholder="<?php echo htmlentities($row['username']);?>"  name="userName" class="span8 tip" readonly>
 </div>
 </div>
 
 
-                    <div class="control-group"style="margin-left:13%">
+
+
+                    <div class="control-group" style="margin-left:13%">
                       <div class="controls">
-                        <button type="submit" name="submit" class="btn btn-primary">Click to Register Teacher</button>
+                        <button type="submit" name="submit" class="btn btn-primary">Click to Submit made changes</button>
                       </div>
                     </div>
                   </form>
